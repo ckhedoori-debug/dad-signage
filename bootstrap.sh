@@ -18,7 +18,7 @@
 
 set -euo pipefail
 
-REPO_URL="${REPO_URL:-https://github.com/REPLACE_ME/dad-signage.git}"
+REPO_URL="${REPO_URL:-https://github.com/ckhedoori-debug/dad-signage.git}"
 INSTALL_DIR="${HOME}/grace-house"
 USER_NAME="$(id -un)"
 
