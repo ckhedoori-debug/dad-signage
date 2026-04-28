@@ -1,0 +1,19 @@
+{
+  "location": {
+    "city": "Sydney",
+    "lat": -33.87,
+    "lon": 151.21,
+    "tz": "Australia/Sydney"
+  },
+  "stocks": ["^AXJO", "^GSPC", "AUDUSD=X", "GC=F", "BTC-USD"],
+  "newsSource": "https://www.abc.net.au/news/feed/45910/rss.xml",
+  "refreshIntervals": {
+    "weatherMinutes": 10,
+    "newsMinutes": 15,
+    "stocksMinutes": 5,
+    "manifestMinutes": 5
+  },
+  "mediaFolder": "assets/media",
+  "crossfadeSeconds": 3,
+  "newsRotateSeconds": 12
+}

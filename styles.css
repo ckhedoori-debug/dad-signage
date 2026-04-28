@@ -1,0 +1,315 @@
+/* ============================================================
+   Grace House Signage v2 — quieter, data-forward
+   Audience: lawyers + architects in the Grace House lobby.
+   Hero is the markets table; clock is reduced to the rail.
+   Single animated motif (harmonograph) holds the wow factor.
+   ============================================================ */
+
+:root {
+  /* Screen contract — swap these to retarget */
+  --screen-width:  2436px;
+  --screen-height: 783px;
+
+  /* Grace House palette */
+  --gh-olive:        #5C6248;
+  --gh-olive-deep:   #4A4E37;
+  --gh-forest:       #131C12;
+  --gh-cream:        #E5E5DA;
+  --gh-cream-dim:    rgba(229, 229, 218, 0.62);
+  --gh-cream-faint:  rgba(229, 229, 218, 0.32);
+  --gh-cream-trace:  rgba(229, 229, 218, 0.14);
+  --gh-line:         rgba(229, 229, 218, 0.18);
+  --gh-up:           #C2D6B0;
+  --gh-down:         #DDB3A4;
+
+  /* Type stack */
+  --font-display: 'Archivo', 'Inter', sans-serif;
+  --font-serif:   'Cormorant Garamond', 'Times New Roman', serif;
+  --font-mono:    'IBM Plex Mono', ui-monospace, monospace;
+  --font-body:    'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Internal scale unit (1u ≈ 1% of screen height) */
+  --u: calc(var(--screen-height) / 100);
+
+  --rail-h:    calc(var(--u) * 5.5);
+  --pad-x:     calc(var(--u) * 4);
+  --pad-y:     calc(var(--u) * 3);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--gh-forest);
+  color: var(--gh-cream);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  cursor: none;
+}
+
+/* ---------- stage scaling ----------------------------------- */
+.stage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--screen-width);
+  height: var(--screen-height);
+  transform-origin: center center;
+  background: var(--gh-olive);
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: var(--rail-h) 1fr calc(var(--u) * 7);
+  grid-template-columns: 100%;
+}
+
+/* ---------- background blueprint grid ----------------------- */
+.bg-grid {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ---------- rails ------------------------------------------- */
+.rail {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 1.2);
+  padding: 0 var(--pad-x);
+  font-family: var(--font-mono);
+  font-size: calc(var(--u) * 1.5);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gh-cream-dim);
+}
+.rail-top    { border-bottom: 1px solid var(--gh-line); }
+.rail-bottom { border-top:    1px solid var(--gh-line); padding: 0; overflow: hidden; }
+.rail-tag    { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.rail-sep    { opacity: 0.45; }
+.rail-spacer { flex: 1; }
+
+.brand {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: calc(var(--u) * 2.4);
+  letter-spacing: 0.06em;
+  color: var(--gh-cream);
+  margin-right: calc(var(--u) * 0.3);
+}
+
+/* ---------- main content grid ------------------------------- */
+.content {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 0.85fr 1.30fr 0.95fr;
+  align-items: stretch;
+  padding: var(--pad-y) var(--pad-x);
+  gap: calc(var(--u) * 4);
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--u) * 2);
+  min-width: 0;
+}
+.block + .block {
+  border-left: 1px solid var(--gh-line);
+  padding-left: calc(var(--u) * 4);
+  margin-left: calc(var(--u) * -2);
+}
+
+.block-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--font-mono);
+  font-size: calc(var(--u) * 1.5);
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--gh-cream);
+  border-bottom: 1px solid var(--gh-line);
+  padding-bottom: calc(var(--u) * 1);
+}
+.block-label-dim {
+  color: var(--gh-cream-faint);
+  letter-spacing: 0.22em;
+}
+
+/* ---------- col 1: harmonograph motif ----------------------- */
+.block-motif {
+  align-items: stretch;
+}
+.motif-frame {
+  position: relative;
+  flex: 1;
+  border: 1px solid var(--gh-line);
+  background: linear-gradient(180deg, rgba(19,28,18,0.18) 0%, rgba(19,28,18,0.32) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.motif-frame::before,
+.motif-frame::after {
+  content: "";
+  position: absolute;
+  width: calc(var(--u) * 1.4);
+  height: calc(var(--u) * 1.4);
+  border: 1px solid var(--gh-cream-faint);
+}
+.motif-frame::before { top: calc(var(--u) * 0.8); left: calc(var(--u) * 0.8); border-right: 0; border-bottom: 0; }
+.motif-frame::after  { bottom: calc(var(--u) * 0.8); right: calc(var(--u) * 0.8); border-left: 0; border-top: 0; }
+#motif {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.motif-foot {
+  font-family: var(--font-mono);
+  font-size: calc(var(--u) * 1.2);
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--gh-cream-faint);
+  text-align: center;
+}
+
+/* ---------- col 2: markets ---------------------------------- */
+.block-markets { flex: 1; }
+.markets {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  font-size: calc(var(--u) * 2.3);
+}
+.markets tr {
+  border-bottom: 1px solid var(--gh-line);
+  transition: background-color 0.6s ease;
+}
+.markets tr.flash-up   { background-color: rgba(194, 214, 176, 0.10); }
+.markets tr.flash-down { background-color: rgba(221, 179, 164, 0.10); }
+.markets td {
+  padding: calc(var(--u) * 1.2) 0;
+  white-space: nowrap;
+}
+.markets td.sym {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: calc(var(--u) * 2.0);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gh-cream);
+}
+.markets td.price {
+  text-align: right;
+  font-size: calc(var(--u) * 2.4);
+  color: var(--gh-cream);
+  padding-right: calc(var(--u) * 4);
+}
+.markets td.change {
+  text-align: right;
+  font-size: calc(var(--u) * 1.9);
+  letter-spacing: 0.04em;
+  width: calc(var(--u) * 12);
+}
+.markets td.change.up   { color: var(--gh-up);   }
+.markets td.change.down { color: var(--gh-down); }
+.markets td.empty {
+  color: var(--gh-cream-faint);
+  font-size: calc(var(--u) * 1.6);
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: calc(var(--u) * 2) 0;
+}
+
+/* ---------- col 3: weather ---------------------------------- */
+.block-weather {}
+.weather-hero {
+  display: flex;
+  align-items: flex-start;
+  font-family: var(--font-serif);
+  font-weight: 300;
+  line-height: 0.85;
+  color: var(--gh-cream);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.weather-temp { font-size: calc(var(--u) * 18); }
+.weather-deg  { font-size: calc(var(--u) * 8); margin-top: calc(var(--u) * 1.5); margin-left: calc(var(--u) * -0.8); color: var(--gh-cream-dim); }
+.weather-condition {
+  font-family: var(--font-mono);
+  font-size: calc(var(--u) * 1.7);
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--gh-cream-dim);
+}
+.weather-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(var(--u) * 0.8) calc(var(--u) * 2.5);
+  margin-top: calc(var(--u) * 1);
+  font-family: var(--font-mono);
+  font-size: calc(var(--u) * 1.35);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+.weather-meta > div {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px dashed var(--gh-cream-trace);
+  padding-bottom: calc(var(--u) * 0.4);
+}
+.weather-meta dt { color: var(--gh-cream-faint); }
+.weather-meta dd { color: var(--gh-cream); }
+
+/* ---------- ticker ------------------------------------------ */
+.ticker {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 3%, #000 97%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 3%, #000 97%, transparent 100%);
+}
+.ticker-track {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  white-space: nowrap;
+  gap: calc(var(--u) * 4);
+  padding-left: 100%;
+  animation: ticker-scroll 95s linear infinite;
+  will-change: transform;
+}
+.ticker-item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: calc(var(--u) * 1.2);
+  font-family: var(--font-mono);
+  font-size: calc(var(--u) * 1.7);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gh-cream-dim);
+}
+.ticker-symbol { color: var(--gh-cream); }
+.ticker-value  { color: var(--gh-cream); }
+.ticker-change.up   { color: var(--gh-up); }
+.ticker-change.down { color: var(--gh-down); }
+.ticker-sep { color: var(--gh-cream-faint); margin: 0 calc(var(--u) * 1); }
+
+@keyframes ticker-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-100%); }
+}

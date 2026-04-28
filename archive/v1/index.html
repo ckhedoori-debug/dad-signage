@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Grace House</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Archivo:wght@800;900&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="stage" id="stage">
+
+    <!-- Background media layer -->
+    <div class="media" id="media">
+      <video class="media-item active" id="mediaA" muted playsinline autoplay loop preload="auto"></video>
+      <video class="media-item" id="mediaB" muted playsinline preload="auto"></video>
+      <img class="media-item" id="mediaImgA" alt="" />
+      <img class="media-item" id="mediaImgB" alt="" />
+    </div>
+
+    <!-- Vignette / scrim for legibility -->
+    <div class="scrim"></div>
+
+    <!-- Top rail -->
+    <header class="rail rail-top">
+      <span class="rail-tag">GRACE HOUSE</span>
+      <span class="rail-sep">—</span>
+      <span class="rail-tag">279 CLARENCE ST</span>
+      <span class="rail-sep">—</span>
+      <span class="rail-tag">SYDNEY</span>
+      <span class="rail-spacer"></span>
+      <span class="rail-tag" id="weatherTag" data-empty="—">—</span>
+    </header>
+
+    <!-- Left rail (vertical, mimics PDF side label) -->
+    <aside class="rail-side rail-side-left">
+      <span>EST 1913 · REINVENTED 2023</span>
+    </aside>
+
+    <!-- Right rail (vertical) -->
+    <aside class="rail-side rail-side-right">
+      <span id="dateLong">—</span>
+    </aside>
+
+    <!-- Main content row -->
+    <main class="content">
+      <!-- Left: Time + Date -->
+      <section class="block block-time">
+        <div class="time-display" id="timeDisplay">--:--</div>
+        <div class="time-meta">
+          <span id="timeSeconds" class="time-seconds">--</span>
+          <span class="time-zone">SYDNEY · AEST</span>
+        </div>
+      </section>
+
+      <!-- Center: Brand monogram -->
+      <section class="block block-mark" aria-hidden="true">
+        <div class="monogram">
+          <span class="monogram-line">|G|</span>
+          <span class="monogram-line">|H|</span>
+        </div>
+        <div class="monogram-est">EST 1913</div>
+      </section>
+
+      <!-- Right: News headlines (rotating) -->
+      <section class="block block-news">
+        <div class="news-label">HEADLINES</div>
+        <div class="news-feed" id="newsFeed">
+          <div class="news-item active" data-empty>—</div>
+        </div>
+        <div class="news-meta">
+          <span id="newsSource">ABC NEWS AU</span>
+          <span class="news-updated" id="newsUpdated"></span>
+        </div>
+      </section>
+    </main>
+
+    <!-- Bottom rail: stocks ticker -->
+    <footer class="rail rail-bottom">
+      <div class="ticker" id="stocksTicker">
+        <div class="ticker-track" id="stocksTrack"></div>
+      </div>
+    </footer>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Grace House · v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Archivo:wght@500;700;800;900&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="stage" id="stage">
+
+    <!-- Static blueprint grid behind everything -->
+    <svg class="bg-grid" aria-hidden="true">
+      <defs>
+        <pattern id="gridS" width="48" height="48" patternUnits="userSpaceOnUse">
+          <path d="M 48 0 L 0 0 0 48" fill="none" stroke="rgba(229,229,218,0.06)" stroke-width="1"/>
+        </pattern>
+        <pattern id="gridL" width="240" height="240" patternUnits="userSpaceOnUse">
+          <path d="M 240 0 L 0 0 0 240" fill="none" stroke="rgba(229,229,218,0.10)" stroke-width="1"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#gridS)" />
+      <rect width="100%" height="100%" fill="url(#gridL)" />
+    </svg>
+
+    <!-- Top rail -->
+    <header class="rail rail-top">
+      <span class="brand">|G|H|</span>
+      <span class="rail-sep">·</span>
+      <span class="rail-tag">GRACE HOUSE</span>
+      <span class="rail-sep">·</span>
+      <span class="rail-tag">279 CLARENCE ST</span>
+      <span class="rail-sep">·</span>
+      <span class="rail-tag">SYDNEY</span>
+      <span class="rail-spacer"></span>
+      <span class="rail-tag" id="dateRail">—</span>
+      <span class="rail-sep">·</span>
+      <span class="rail-tag" id="timeRail">--:--</span>
+    </header>
+
+    <!-- Main grid -->
+    <main class="content">
+
+      <!-- Col 1: animated motif -->
+      <section class="block block-motif">
+        <div class="block-label">
+          <span>HARMONOGRAPH</span>
+          <span class="block-label-dim">№ <span id="motifSeq">001</span></span>
+        </div>
+        <div class="motif-frame">
+          <canvas id="motif"></canvas>
+        </div>
+        <div class="motif-foot">
+          <span>OSCILLATING · PERPETUAL · 1844 — TODAY</span>
+        </div>
+      </section>
+
+      <!-- Col 2: markets -->
+      <section class="block block-markets">
+        <div class="block-label">
+          <span>MARKETS</span>
+          <span class="block-label-dim" id="marketsUpdated">—</span>
+        </div>
+        <table class="markets" id="marketsTable">
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <!-- Col 3: Sydney weather -->
+      <section class="block block-weather">
+        <div class="block-label">
+          <span>SYDNEY</span>
+          <span class="block-label-dim" id="weatherUpdated">—</span>
+        </div>
+        <div class="weather-hero">
+          <span class="weather-temp" id="weatherTemp">—</span><span class="weather-deg">°</span>
+        </div>
+        <div class="weather-condition" id="weatherCondition">—</div>
+        <dl class="weather-meta">
+          <div><dt>FEELS</dt><dd id="weatherFeels">—</dd></div>
+          <div><dt>HIGH</dt><dd id="weatherHigh">—</dd></div>
+          <div><dt>LOW</dt><dd id="weatherLow">—</dd></div>
+          <div><dt>HUMIDITY</dt><dd id="weatherHumidity">—</dd></div>
+          <div><dt>SUNSET</dt><dd id="weatherSunset">—</dd></div>
+          <div><dt>UV INDEX</dt><dd id="weatherUV">—</dd></div>
+        </dl>
+      </section>
+
+    </main>
+
+    <!-- Bottom ticker -->
+    <footer class="rail rail-bottom">
+      <div class="ticker">
+        <div class="ticker-track" id="stocksTrack"></div>
+      </div>
+    </footer>
+
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "location": {
+    "city": "Sydney",
+    "lat": -33.87,
+    "lon": 151.21,
+    "tz": "Australia/Sydney"
+  },
+  "stocks": ["^AXJO", "^GSPC", "^IXIC", "AUDUSD=X", "GC=F", "BTC-USD"],
+  "refreshIntervals": {
+    "weatherMinutes": 10,
+    "stocksMinutes": 5
+  }
+}
