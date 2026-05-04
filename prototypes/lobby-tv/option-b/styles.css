@@ -1,0 +1,375 @@
+:root {
+  --bg: #1B1F18;
+  --olive: #7C8B6A;
+  --olive-dim: rgba(124, 139, 106, 0.55);
+  --cream: #E6DFCE;
+  --cream-dim: rgba(230, 223, 206, 0.6);
+  --line: rgba(230, 223, 206, 0.14);
+  --panel-tint: rgba(124, 139, 106, 0.06);
+  --up: #9BC288;
+  --down: #D88179;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  background: #000;
+  color: var(--cream);
+  font-family: 'Inter', system-ui, sans-serif;
+  overflow: hidden;
+}
+
+.preview-wrapper {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: #000;
+}
+
+.stage {
+  width: 2436px;
+  height: 783px;
+  background: var(--bg);
+  transform: scale(var(--fit, 1));
+  transform-origin: center;
+  display: grid;
+  grid-template-rows: 48px 687px 48px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Kiosk mode: viewport >= 2436x783 (the NUC at 2560x1080 hits this).
+   Per X8E top-left capture contract: stage anchored top-left at exact
+   2436x783, no centering, no scale-to-fit transform. */
+html.kiosk-mode .preview-wrapper {
+  display: block;
+}
+html.kiosk-mode .stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: top left;
+}
+
+/* ---------- HEADER ---------- */
+.header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  padding: 0 28px;
+  border-bottom: 1px solid var(--line);
+}
+.time {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 22px;
+  letter-spacing: 0.04em;
+  display: flex;
+  gap: 18px;
+  align-items: baseline;
+}
+.time .date {
+  font-size: 13px;
+  color: var(--olive);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.weather {
+  text-align: center;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  justify-content: center;
+}
+.weather .temp {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 1;
+}
+.weather .cond {
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: var(--cream-dim);
+}
+.forecast {
+  display: flex;
+  gap: 28px;
+  justify-content: flex-end;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 14px;
+}
+.forecast em {
+  font-style: normal;
+  color: var(--olive);
+  margin-right: 8px;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+}
+
+/* ---------- GRID ---------- */
+.grid {
+  display: grid;
+  grid-template-columns: 590px 1fr 590px;
+}
+
+/* ---------- SPORTS COL ---------- */
+.sports {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 7px;
+  padding: 7px;
+}
+.tile {
+  position: relative;
+  background: #000;
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+
+/* ---------- MARKETS HERO TILE ---------- */
+.tile-markets {
+  background:
+    radial-gradient(ellipse at top right, rgba(124, 139, 106, 0.08), transparent 60%),
+    linear-gradient(160deg, #0e110b 0%, #161a12 100%);
+}
+.mkt {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: 14px 18px 12px;
+}
+.mkt-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 10px;
+}
+.mkt-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 500;
+  font-size: 22px;
+  letter-spacing: 0.16em;
+  color: var(--cream);
+  text-transform: uppercase;
+}
+.mkt-meta {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: var(--olive);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.mkt-meta .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--up);
+  box-shadow: 0 0 6px rgba(155, 194, 136, 0.7);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+.mkt-hero {
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: 6px;
+  align-content: stretch;
+}
+.mkt-row {
+  display: grid;
+  grid-template-columns: 90px 1fr auto auto;
+  gap: 14px;
+  align-items: center;
+  padding: 4px 0;
+}
+.mkt-lbl {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--cream-dim);
+  text-transform: uppercase;
+}
+.mkt-spark {
+  width: 100%;
+  height: 26px;
+  fill: none;
+  stroke: var(--olive);
+  stroke-width: 1.4;
+  opacity: 0.7;
+}
+.mkt-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px;
+  font-weight: 500;
+  color: var(--cream);
+  letter-spacing: 0.02em;
+  min-width: 90px;
+  text-align: right;
+}
+.mkt-dlt {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  min-width: 64px;
+  text-align: right;
+}
+.mkt-dlt.up { color: var(--up); }
+.mkt-dlt.down { color: var(--down); }
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ---------- HERO ---------- */
+.hero {
+  background: #000;
+  position: relative;
+  overflow: hidden;
+  border-left: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+}
+.hero video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  opacity: 0;
+  transition: opacity 3.333s linear;
+  will-change: opacity;
+}
+.hero video.is-active {
+  opacity: 1;
+}
+.hero-corner {
+  position: absolute;
+  bottom: 18px;
+  left: 22px;
+  z-index: 2;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  letter-spacing: 0.32em;
+  color: var(--cream);
+  text-shadow: 0 1px 12px rgba(0,0,0,0.6);
+}
+.hero-handle {
+  position: absolute;
+  bottom: 20px;
+  right: 22px;
+  z-index: 2;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  color: var(--cream);
+  text-shadow: 0 1px 12px rgba(0,0,0,0.6);
+}
+
+/* ---------- RIGHT COL ---------- */
+.rightcol {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 7px;
+  padding: 7px;
+}
+.panel {
+  background: var(--panel-tint);
+  border: 1px solid var(--line);
+  padding: 16px 20px 14px;
+  overflow: hidden;
+}
+.panel h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.22em;
+  color: var(--olive);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+.stocks ul, .news ul { list-style: none; }
+.stocks li {
+  display: grid;
+  grid-template-columns: 1fr auto 70px;
+  gap: 12px;
+  padding: 6px 0;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  border-bottom: 1px solid var(--line);
+  align-items: baseline;
+}
+.stocks li:last-child { border-bottom: 0; }
+.stocks .lbl { color: var(--cream); }
+.stocks .num { text-align: right; color: var(--cream); }
+.stocks .up { text-align: right; color: var(--up); }
+.stocks .down { text-align: right; color: var(--down); }
+.news li {
+  padding: 8px 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--cream);
+  border-bottom: 1px solid var(--line);
+}
+.news li:last-child { border-bottom: 0; }
+
+/* ---------- TICKER ---------- */
+.ticker {
+  border-top: 1px solid var(--line);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  background: #16190F;
+  position: relative;
+}
+.ticker::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  background: linear-gradient(to right, #16190F, transparent);
+  z-index: 2;
+  pointer-events: none;
+}
+.ticker::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  background: linear-gradient(to left, #16190F, transparent);
+  z-index: 2;
+  pointer-events: none;
+}
+.ticker-track {
+  display: flex;
+  gap: 60px;
+  white-space: nowrap;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 14px;
+  letter-spacing: 0.05em;
+  color: var(--cream);
+  animation: scroll 55s linear infinite;
+  padding-left: 60px;
+}
+.ticker-track span em {
+  font-style: normal;
+  margin-left: 4px;
+}
+.ticker-track .up { color: var(--up); }
+.ticker-track .down { color: var(--down); }
+.ticker-track .hl { color: var(--olive); letter-spacing: 0.12em; }
+@keyframes scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}

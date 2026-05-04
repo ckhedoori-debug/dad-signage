@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Grace House Lobby — Option C (Strip-honest)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="preview-wrapper">
+    <div class="stage">
+
+      <header class="header">
+        <div class="time-block">
+          <span class="time" id="clock">--:--</span>
+          <span class="meta">
+            <em id="date">—</em>
+            <em>SYDNEY · AEST</em>
+          </span>
+        </div>
+        <div class="weather-block">
+          <span class="temp" data-wx-temp>—</span>
+          <span class="sep"></span>
+          <span class="cond" data-wx-cond>SYDNEY</span>
+          <span class="sep"></span>
+          <span class="extra" data-wx-extra>WIND&nbsp;—&nbsp;KM/H · HUMIDITY&nbsp;—%</span>
+        </div>
+        <div class="forecast-block" data-forecast>
+          <span><em>—</em> — / —</span>
+          <span><em>—</em> — / —</span>
+          <span><em>—</em> — / —</span>
+        </div>
+      </header>
+
+      <main class="grid">
+
+        <section class="sports">
+          <div class="tile tile-markets" data-tile="markets-hero">
+            <div class="mkt">
+              <div class="mkt-head">
+                <span class="mkt-title">MARKETS</span>
+                <span class="mkt-meta"><span class="dot"></span><span data-mkt-meta>ASX · LIVE</span></span>
+              </div>
+              <div class="mkt-hero">
+                <div class="mkt-row" data-mkt-row="^AXJO" data-arrow>
+                  <div class="mkt-lbl">ASX 200</div>
+                  <svg class="mkt-spark" viewBox="0 0 100 30" preserveAspectRatio="none"><polyline data-spark points=""/></svg>
+                  <div class="mkt-num" data-num>—</div>
+                  <div class="mkt-dlt" data-dlt>—</div>
+                </div>
+                <div class="mkt-row" data-mkt-row="^GSPC" data-arrow>
+                  <div class="mkt-lbl">S&amp;P 500</div>
+                  <svg class="mkt-spark" viewBox="0 0 100 30" preserveAspectRatio="none"><polyline data-spark points=""/></svg>
+                  <div class="mkt-num" data-num>—</div>
+                  <div class="mkt-dlt" data-dlt>—</div>
+                </div>
+                <div class="mkt-row" data-mkt-row="^N225" data-arrow>
+                  <div class="mkt-lbl">NIKKEI</div>
+                  <svg class="mkt-spark" viewBox="0 0 100 30" preserveAspectRatio="none"><polyline data-spark points=""/></svg>
+                  <div class="mkt-num" data-num>—</div>
+                  <div class="mkt-dlt" data-dlt>—</div>
+                </div>
+              </div>
+              <div class="mkt-strip">
+                <div class="mkt-cell" data-mkt-cell="AUDUSD=X" data-arrow><span>AUD/USD</span><strong data-num>—</strong><em data-dlt>—</em></div>
+                <div class="mkt-cell" data-mkt-cell="GC=F" data-arrow><span>GOLD</span><strong data-num>—</strong><em data-dlt>—</em></div>
+                <div class="mkt-cell" data-mkt-cell="BTC" data-arrow><span>BTC</span><strong data-num>—</strong><em data-dlt>—</em></div>
+              </div>
+            </div>
+          </div>
+          <div class="tile">
+            <iframe src="https://www.youtube.com/embed/5uZa3-RMFos?autoplay=1&mute=1&controls=0&modestbranding=1&playsinline=1&rel=0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            <div class="tile-chrome">
+              <div class="tile-label"><span class="dot"></span>SYDNEY · HARBOUR</div>
+              <div class="tile-meta">LIVE CAMERA</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="hero">
+          <video src="../assets/hero.mov" autoplay loop muted playsinline></video>
+          <div class="hero-overlay">
+            <div class="hero-tag">FEATURE</div>
+            <div class="hero-title">GRACE HOUSE</div>
+          </div>
+        </section>
+
+        <section class="rightcol">
+          <div class="panel stocks">
+            <div class="panel-head">
+              <h3>MARKETS</h3>
+              <span class="panel-meta" data-rc-stocks-meta>ASX · LIVE</span>
+            </div>
+            <ul data-rc-stocks data-arrow>
+              <li data-rc-row="^AXJO"><span class="lbl">ASX 200</span><span class="num" data-num>—</span><span data-dlt>—</span></li>
+              <li data-rc-row="^GSPC"><span class="lbl">S&amp;P 500</span><span class="num" data-num>—</span><span data-dlt>—</span></li>
+              <li data-rc-row="^N225"><span class="lbl">NIKKEI</span><span class="num" data-num>—</span><span data-dlt>—</span></li>
+              <li data-rc-row="AUDUSD=X"><span class="lbl">AUD/USD</span><span class="num" data-num>—</span><span data-dlt>—</span></li>
+              <li data-rc-row="GC=F"><span class="lbl">GOLD</span><span class="num" data-num>—</span><span data-dlt>—</span></li>
+              <li data-rc-row="BTC"><span class="lbl">BITCOIN</span><span class="num" data-num>—</span><span data-dlt>—</span></li>
+            </ul>
+          </div>
+          <div class="panel news">
+            <div class="panel-head">
+              <h3 data-news-head>HEADLINES</h3>
+              <span class="panel-meta" data-news-meta>UPDATED —</span>
+            </div>
+            <ul data-news data-numbered>
+              <li><em>—</em>Loading…</li>
+            </ul>
+          </div>
+        </section>
+
+      </main>
+
+      <footer class="ticker">
+        <div class="ticker-mode">LIVE</div>
+        <div class="ticker-track" data-ticker data-arrow>
+          <span>Loading live data…</span>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+  <script src="../shared/data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

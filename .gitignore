@@ -2,6 +2,8 @@
 *.log
 .gh-kiosk-profile/
 .claude/
+__pycache__/
+*.pyc
 
 # Parallel-chat variants — kept on disk, not pushed
 atelier/
