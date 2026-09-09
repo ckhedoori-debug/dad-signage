@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Grace House Lobby . Option D (Full Width)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="preview-wrapper">
+    <!-- data-layout picks the word placement: a = corners, b = crown,
+         c = ledger. Override for a look with ?layout=b in the URL. -->
+    <div class="stage" data-layout="a">
+
+      <header class="bar bar-top">
+        <div class="blk blk-mark"><span class="mark-name">GRACE HOUSE</span></div>
+        <div class="blk blk-addr">279 CLARENCE STREET</div>
+        <div class="blk blk-when">
+          <span class="clock" data-clock>--:--</span>
+          <span class="date" data-date></span>
+        </div>
+        <div class="blk blk-wx">
+          <span class="wx-temp" data-wx-temp>--</span>
+          <span class="wx-cond" data-wx-cond>Sydney</span>
+          <span class="wx-days" data-forecast></span>
+        </div>
+      </header>
+
+      <main class="hero" data-render-scale="1">
+        <canvas class="art" id="art"></canvas>
+        <video id="heroVideo" muted playsinline loop preload="auto" hidden></video>
+      </main>
+
+      <footer class="bar bar-bottom">
+        <div class="blk blk-mark"><span class="mark-name">GRACE HOUSE</span></div>
+        <div class="blk blk-addr">279 CLARENCE STREET</div>
+        <div class="blk blk-when">
+          <span class="clock" data-clock>--:--</span>
+          <span class="date" data-date></span>
+        </div>
+        <div class="blk blk-wx">
+          <span class="wx-temp" data-wx-temp>--</span>
+          <span class="wx-cond" data-wx-cond>Sydney</span>
+          <span class="wx-days" data-forecast></span>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+  <!-- No ../shared/data.js on purpose: this page owns its own weather so it
+       does not depend on which revision of the shared data layer the NUC has.
+       See the weather section of app.js. -->
+  <script src="app.js"></script>
+</body>
+</html>

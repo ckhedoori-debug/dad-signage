@@ -1,0 +1,191 @@
+/* Grace House lobby wall . Option D (full width hero, minimal chrome)
+   Geometry contract (see memory: feedback_grace_house_x8e_top_left_capture):
+   the Colorlight X8E captures only the top left 2436x783 of the HDMI input.
+   The NUC outputs 2560x1080, so the stage is anchored top left at exactly
+   2436x783, with no centring and no scale to fit transform in kiosk mode.
+   Everything outside it stays black. */
+
+:root {
+  --bg: #060607;
+  --cream: #E9E3D6;
+  --dim: rgba(233, 227, 214, 0.42);
+  --faint: rgba(233, 227, 214, 0.26);
+  --bronze: #C8A96E;
+  --line: rgba(233, 227, 214, 0.10);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  background: #000;
+  color: var(--cream);
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  overflow: hidden;
+}
+
+.preview-wrapper {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: #000;
+}
+
+.stage {
+  width: 2436px;
+  height: 783px;
+  background: var(--bg);
+  transform: scale(var(--fit, 1));
+  transform-origin: center;
+  display: grid;
+  grid-template-rows: 68px 647px 68px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Kiosk mode: viewport >= 2436x783 (the NUC at 2560x1080 hits this).
+   Per the X8E top left capture contract: anchored top left, no transform. */
+html.kiosk-mode .preview-wrapper { display: block; }
+html.kiosk-mode .stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: top left;
+}
+
+/* ---------- BARS ---------- */
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 34px;
+  white-space: nowrap;
+}
+.bar > * { flex: 0 0 auto; }
+.bar-top { border-bottom: 1px solid var(--line); }
+.bar-bottom { border-top: 1px solid var(--line); }
+
+/* Every block exists in BOTH bars. The layout rules further down decide
+   which bar shows which, so a placement change is one attribute and never
+   a DOM move. */
+.blk { display: none; align-items: baseline; }
+
+/* ---------- WORD PLACEMENT ---------- */
+
+/* A . CORNERS. Identity and address across the top, time and weather
+   across the bottom. Four anchored corners, nothing in the middle. */
+[data-layout="a"] .bar-top    .blk-mark,
+[data-layout="a"] .bar-top    .blk-addr,
+[data-layout="a"] .bar-bottom .blk-when,
+[data-layout="a"] .bar-bottom .blk-wx { display: flex; }
+
+/* B . CROWN. The name alone and centred above the art, like a plaque.
+   Everything else drops to one line along the bottom. */
+[data-layout="b"] .bar-top    .blk-mark,
+[data-layout="b"] .bar-bottom .blk-addr,
+[data-layout="b"] .bar-bottom .blk-when,
+[data-layout="b"] .bar-bottom .blk-wx { display: flex; }
+[data-layout="b"] .bar-top { justify-content: center; }
+
+/* C . LEDGER. Name and time together on top, the way a building board
+   reads. Address and weather sit quietly underneath. */
+[data-layout="c"] .bar-top    .blk-mark,
+[data-layout="c"] .bar-top    .blk-when,
+[data-layout="c"] .bar-bottom .blk-addr,
+[data-layout="c"] .bar-bottom .blk-wx { display: flex; }
+
+/* ---------- IDENTITY ---------- */
+
+.mark-name {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 500;
+  font-size: 27px;
+  letter-spacing: 0.36em;
+  color: var(--cream);
+  /* letter-spacing adds a trailing gap. Pull it back so the optical left
+     margin matches the other blocks. Not applied when the name is centred,
+     or it sits half a space off centre. */
+  margin-right: -0.36em;
+}
+[data-layout="b"] .bar-top .mark-name { margin-right: 0; }
+
+.blk-addr {
+  font-size: 12px;
+  letter-spacing: 0.30em;
+  color: var(--faint);
+}
+
+/* ---------- HERO ---------- */
+
+.hero {
+  position: relative;
+  background: #000;
+  overflow: hidden;
+}
+.hero canvas,
+.hero video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.hero video { object-fit: cover; }
+.hero [hidden] { display: none !important; }
+
+/* ---------- BOTTOM: time and weather ---------- */
+
+.blk-when { gap: 18px; }
+.clock {
+  font-size: 34px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.date {
+  font-size: 13px;
+  letter-spacing: 0.26em;
+  color: var(--dim);
+}
+
+.blk-wx { gap: 12px; }
+.wx-temp {
+  font-size: 30px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--cream);
+}
+.wx-cond {
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  color: var(--dim);
+  text-transform: uppercase;
+}
+
+.wx-days {
+  display: flex;
+  align-items: baseline;
+  gap: 26px;
+  margin-left: 22px;
+  padding-left: 34px;
+  border-left: 1px solid var(--line);
+}
+.wx-day {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  font-variant-numeric: tabular-nums;
+}
+.wx-day .d { color: var(--faint); }
+.wx-day .hi { color: var(--cream); }
+.wx-day .lo { color: var(--dim); }
+
+/* Stale data: the weather block dims rather than showing a wrong number
+   confidently. Set by app.js when the cache ages past an hour. */
+.blk-wx.is-stale { opacity: 0.45; }
