@@ -1,7 +1,9 @@
 # Option D . full width hero, minimal chrome
 
-Built 9 Sep 2026. **Not deployed. Nothing pushed.** option-b is still the live
-page and is untouched.
+Built and **deployed 9 Sep 2026 15:43 AEST**. This is the page on the wall.
+`option-b` is untouched on disk and is the rollback. See "DEPLOYED" at the
+bottom of this file for the rollback command, what changed on the NUC, and the
+two open issues.
 
 ## What this is
 
@@ -101,14 +103,20 @@ then open `http://127.0.0.1:8888/option-d/`. Below 2436 x 783 the stage scales
 down to fit so it is previewable on a laptop; at or above it, kiosk mode
 engages and the geometry contract applies.
 
-## When it goes live (not yet done)
+## Switching between pages
 
-`scripts/kiosk-switch.sh` currently knows two targets, `lobby` (option-b) and
-`holding` (the Netlify page). It has **not** been edited. Going live means
-adding an `ambient` case pointing at
-`http://127.0.0.1:9000/prototypes/lobby-tv/option-d/`, committing, pushing,
-letting the NUC's 5 minute cron pull, then running the switch. All of that is
-Michael's call and none of it has happened.
+`scripts/kiosk-switch.sh` now knows three targets: `lobby` (option-b),
+`ambient` (option-d, currently live) and `holding` (the Netlify page).
+
+```
+ssh grace@grace-house.taile7d5a3.ts.net '~/grace-house/scripts/kiosk-switch.sh ambient'
+ssh grace@grace-house.taile7d5a3.ts.net '~/grace-house/scripts/kiosk-switch.sh lobby'
+```
+
+It rewrites `~/.config/openbox/autostart` (so the choice survives a reboot)
+and relaunches chromium detached. Since 9 Sep the watchdog reads its URL from
+that same file, so the switcher alone decides what is live and a rollback is
+one command rather than two.
 
 ---
 
@@ -177,3 +185,78 @@ pixelated. `size()` now multiplies by `--fit` times `devicePixelRatio`
 On the NUC `--fit` is 1 and `devicePixelRatio` is 1, so this evaluates to 1
 and the wall renders at exactly 2436 x 647 as before. The benchmark above
 still holds.
+
+---
+
+## DEPLOYED 9 Sep 2026 15:43 AEST
+
+Live on the wall. `option-b` remains on disk, untouched, as the rollback.
+
+**Rollback, one line, works from anywhere on the tailnet:**
+
+```
+ssh grace@grace-house.taile7d5a3.ts.net '~/grace-house/scripts/kiosk-switch.sh lobby'
+```
+
+### How it actually deploys (NOT git)
+
+The 5 minute `git pull` cron described in older notes **does not exist** on the
+NUC, and `prototypes/`, `scripts/`, `gallery/` and `holding/` are all
+**untracked** there. The whole live kiosk is hand managed files. A `git pull`
+would have collided with the running page. Deployment is `scp` into
+`~/grace-house/prototypes/lobby-tv/option-d/`, which `gh-server` serves from
+`WorkingDirectory=/home/grace/grace-house`. The git push is the record, not
+the delivery mechanism.
+
+### Changes made on the NUC (both untracked, both backed up)
+
+- `scripts/kiosk-watchdog.sh` (backup: `.bak-2026-09-09`)
+  - `KIOSK_URL` was hardcoded to option-b. Any watchdog restart would have
+    silently reverted the wall. It now derives the URL from
+    `~/.config/openbox/autostart`, so `kiosk-switch.sh` is the single source
+    of truth, with an option-b fallback if the file cannot be read.
+  - `HERO_GEOM` moved from `589,49,1250,683` (the old centre video box) to
+    `618,150,1200,450`, wholly inside the new full width art.
+- `scripts/kiosk-switch.sh` (was never on the NUC at all; now deployed)
+  - new `ambient` target for option-d, and the template seeder taught the
+    option-d URL so switching keeps working after the template is written.
+
+### The heartbeat, and why it is not optional
+
+`kiosk-watchdog.sh` proves the renderer is alive by counting `now-playing.json`
+requests in the gh-server journal, because a dead renderer leaves the chromium
+process up. That is option-b's portal poll. option-d has no portal, so it
+sends the same 20s beat deliberately. Remove it and the watchdog declares the
+page dead within `STALE_MIN` and restarts chromium every few minutes forever.
+
+### Verified after switch
+
+- Stage anchored 0,0 at exactly 2436 x 783; canvas 2436 x 647, one pixel per LED.
+- Weather live from the page's own Open Meteo fetch. Clock live.
+- Heartbeat: 6 requests per 2 minutes, the expected 20s cadence.
+- Watchdog freeze test run verbatim (5 grabs, 5s apart, on the new HERO_GEOM):
+  **not frozen**.
+- Chromium uptime 18 minutes with **zero restarts** and **zero watchdog log
+  entries** since the switch. For comparison the old video page threw
+  "hero video FROZEN" strikes 14 times on 9 Sep, the last at 15:23, twenty
+  minutes before the switch.
+
+### Open: the shared memory leak is REDUCED, NOT FIXED
+
+Measured over two consecutive 5 minute windows: **402 then 504 MB/hour**, so
+call it ~450 MB/hour and note it is not decaying. Video playback on this same
+box measured 1820 to 2900 MB/hour, so this is roughly a quarter to a fifth of
+that, but it is not zero and the artwork does not eliminate it.
+
+Consequence: `/dev/shm` is 7.62 GB and the watchdog pre-emptively restarts at
+65 percent, so expect **one automatic restart roughly every 10 to 11 hours**
+instead of every 2 to 4. That is unattended and safe, but it is a restart, and
+the claim "generative art removes the leak" is NOT supported. A longer soak is
+owed before anyone repeats that claim.
+
+### Open: the wordmark typeface
+
+`GRACE HOUSE` is set in Cormorant Garamond, carried over from option-b's
+existing corner mark. Whether that is the building's actual brand typeface is
+unconfirmed; there is no Grace House brand asset anywhere in this repo. Raised
+9 Sep, deferred by Michael to later.
