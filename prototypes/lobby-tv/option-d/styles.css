@@ -5,6 +5,22 @@
    2436x783, with no centring and no scale to fit transform in kiosk mode.
    Everything outside it stays black. */
 
+/* The Grace House wordmark face. Served from the NUC's own disk, so it is
+   never a network dependency. The binary is NOT in git; see fonts/README.md.
+   If it is ever missing the wordmark falls back to Cormorant Garamond and the
+   wall keeps working.
+
+   Declared at normal weight and used at normal weight on purpose: Belwe Light
+   ships one weight, and asking for 500 makes the browser synthesise a fake
+   bold that thickens the strokes and ruins the face. */
+@font-face {
+  font-family: 'Belwe Light';
+  src: url('fonts/Belwe-Light.ttf?v=2') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
 :root {
   --bg: #060607;
   --cream: #E9E3D6;
@@ -99,8 +115,8 @@ html.kiosk-mode .stage {
 /* ---------- IDENTITY ---------- */
 
 .mark-name {
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-weight: 500;
+  font-family: 'Belwe Light', 'Cormorant Garamond', Georgia, serif;
+  font-weight: normal;
   font-size: 27px;
   letter-spacing: 0.36em;
   color: var(--cream);

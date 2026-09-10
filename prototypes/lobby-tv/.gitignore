@@ -1,3 +1,52 @@
 assets/*.mov
 assets/*.mp4
 assets/*.webm
+
+# Swappable centre-video runtime state, NEVER commit. Attacker-influenceable
+# uploaded media + per-NUC takeover manifest. Keeping these out of the public
+# repo is the page-side edge of M-GV12 (grace-house-video-upload threat model).
+assets/uploads/
+assets/now-playing.json
+
+# Phase A bench harness, local test only, never ships.
+option-b/bench.html
+
+# Gate A/B test harness output (screenshots) + local deps
+test/shots/
+test/node_modules/
+
+# Phase B ingest runtime state (when the guard runs with repo-relative defaults)
+# + the hostile fixture set. Bench-only, never ship.
+ingest/.work/
+ingest/.state/
+test/fixtures/
+
+# Phase C/D watcher runtime state (repo-relative defaults, bench only).
+ingest/.incoming/
+ingest/.watchstate/
+ingest/mockdrive/
+
+# ---- PORTAL (Round 2) runtime state + secrets — NEVER COMMIT (M-GV15) ----
+# portal.env holds PORTAL_SECRET (signs sessions) + PORTAL_PASSWORD_HASH. On the
+# NUC it lives at /opt/grace-portal (outside the repo); these ignore the paths a
+# repo-relative dev run would create. The public repo must never carry them.
+portal/portal.env
+portal/.state/
+portal/.intake/
+portal/static/uploads/
+
+# ---- CREDENTIALS / ENDPOINT IDENTIFIERS — NEVER COMMIT (M-GV8) ----
+# The repo is PUBLIC. rclone.conf holds the Drive OAuth refresh token; watch.env
+# holds ntfy topics; the credential-setup doc holds the Drive folder ID (an
+# upload-endpoint identifier the threat model requires kept out of the repo).
+**/rclone.conf
+ingest/.config/
+ingest/watch.env
+ingest/PHASE-C-credential-setup.md
+
+# Licensed font binaries. fsType permits EMBEDDING, not redistribution, and
+# this repository is public. Deploy them to the NUC by scp instead.
+**/fonts/*.ttf
+**/fonts/*.otf
+**/fonts/*.woff
+**/fonts/*.woff2

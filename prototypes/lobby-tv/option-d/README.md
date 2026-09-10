@@ -260,3 +260,78 @@ owed before anyone repeats that claim.
 existing corner mark. Whether that is the building's actual brand typeface is
 unconfirmed; there is no Grace House brand asset anywhere in this repo. Raised
 9 Sep, deferred by Michael to later.
+
+---
+
+## Wordmark typeface: Belwe Light (10 Sep 2026)
+
+`GRACE HOUSE` is set in Belwe Light, replacing Cormorant Garamond. Live on the
+wall from 14:02 AEST.
+
+The binary is **not in git**. `fsType` is 0 so embedding is permitted, but
+that governs embedding, not redistribution, and this repo is public. See
+`fonts/README.md`. If the file goes missing the wordmark falls back to
+Cormorant Garamond and the wall keeps working.
+
+Size was left at 27px. Belwe's cap height is 0.683 em against Cormorant's
+~0.66, so at the same size the capitals are actually a hair taller. The line
+box shrinks, but that is metrics, not visual size, and the bar centres it.
+
+### The file needed rebuilding before a browser would take it
+
+The supplied TTF is a 1988 Adobe font and Chromium's font sanitiser rejects
+it outright:
+
+```
+OTS parsing error: maxp: Bad maxZones: 3
+cmap: bad glyph id offset (29928 > 412)
+```
+
+Two rounds of fixing were needed, and **the first was not enough**:
+
+1. `maxp.maxZones` 3 to 2, and a cmap recompile. Chromium 141 in the local
+   test harness then accepted it. **Chromium 147 on the NUC still refused it.**
+2. Stripping all hinting (`fpgm`, `prep`, `cvt`, and every glyph instruction).
+   The maxZones value was only the symptom; the hinting bytecode itself was
+   the problem. Accepted everywhere after that. Hinting is meaningless at
+   27px on a 1.84 mm pitch LED wall.
+
+Also subset to A-Z plus space, which is permitted (the no-subsetting bit is
+not set) and takes it from 70,946 to 3,952 bytes.
+
+Rebuild recipe, if the source font is ever re-supplied, is the fontTools
+sequence above: set maxZones, save, then subset with `hinting = False`.
+
+### Verify it is actually applied, do not eyeball it
+
+A failed webfont falls back silently and the wall still looks plausible. Two
+checks that actually discriminate:
+
+- Rendered width of `.mark-name`: **Belwe 288px, Cormorant 300px**.
+- `document.fonts.check("27px 'Belwe Light'")` plus the face status.
+
+Cap height measured off a screenshot is **not** good enough: the two faces
+differ by about 2px there, which anti-aliasing and a luminance threshold can
+swamp. That produced a false "still Cormorant" reading during this work.
+
+## The 24 hour cache, and why F5 does not deploy anything
+
+`scripts/gh-server.py` sends `Cache-Control: public, max-age=86400` on
+everything. Chromium therefore holds `index.html`, `styles.css` and the fonts
+for a full day and **will not re-request them even across a browser restart**.
+
+This means the documented update path, edit the files then send F5, does not
+work for anything except cache-busted URLs. During this change an F5, a
+ctrl+shift+r and two full chromium restarts all left the old stylesheet in
+place. What finally worked was deleting
+`~/.gh-kiosk-profile/Default/Cache` and `Code Cache` and restarting.
+
+Only the heartbeat updates reliably, because it appends `?t=<timestamp>`.
+
+The font URL now carries `?v=2` so future font swaps bust cleanly, but that
+only helps once `index.html` and `styles.css` are themselves fresh, so it is
+a partial fix. **The real fix is to serve HTML and CSS with `no-cache` and
+keep the long max-age for versioned assets.** That is a change to
+`gh-server.py`, which also serves option-b, so it has not been made. It is
+the single biggest obstacle to updating this wall and should be done before
+the next content change.
