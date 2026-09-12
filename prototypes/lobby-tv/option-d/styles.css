@@ -22,12 +22,43 @@
 }
 
 :root {
-  --bg: #060607;
+  --bg: #08141C;
   --cream: #E9E3D6;
-  --dim: rgba(233, 227, 214, 0.42);
-  --faint: rgba(233, 227, 214, 0.26);
-  --bronze: #C8A96E;
-  --line: rgba(233, 227, 214, 0.10);
+
+  /* The house green is #7C8B6A (option-b, live since May 2026, the
+     olive/forest/cream palette in SESSION-LOG). It is only 13% saturated,
+     and rendered as light on a black field it washes out to near silver:
+     the artwork stops reading as green at all. Michael asked for colour and
+     vibrance, so this deliberately leaves the literal house olive behind
+     and keeps the hue family instead.
+
+     SINGLE SOURCE OF TRUTH. app.js reads this property and feeds it to the
+     shader as the u_accent uniform, so changing this one hex recolours the
+     artwork and the chrome together. Candidates rendered 10 Sep:
+       #35B96B -> #C6EE63  emerald to lime
+       #2CB98C -> #52D9E8  jade to aqua
+       #4FBE62 -> #F0C24A  green to gold
+       #1C4A6B -> #2E7BA8  HARBOUR, highlight #BFE4F7. CHOSEN 12 Sep */
+  --accent: #1C4A6B;
+
+  /* The brightest points. Its own colour, not the field lightened: the
+     bright specular has to be chosen independently or it just reads as a
+     washed out version of the field. */
+  --accent-hi: #BFE4F7;
+
+  /* The light shifts toward this second colour where it gathers, the way
+     refracted light disperses rather than staying one flat hue. Set it equal
+     to --accent for a single tone. */
+  --accent-2: #2E7BA8;
+
+  /* The bar labels need their OWN green, not one derived from --accent.
+     Since the inversion --accent is the dark FIELD colour, and dark green
+     type on a near black bar is unreadable. This one is chosen for contrast
+     against the bar, independently of whatever the field is doing. */
+  --accent-text:  #8FCDEB;
+  --accent-soft:  rgba(143, 205, 235, 0.92);
+  --accent-faint: rgba(143, 205, 235, 0.62);
+  --line:         rgba(143, 205, 235, 0.30);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -130,7 +161,7 @@ html.kiosk-mode .stage {
 .blk-addr {
   font-size: 12px;
   letter-spacing: 0.30em;
-  color: var(--faint);
+  color: var(--accent-faint);
 }
 
 /* ---------- HERO ---------- */
@@ -154,31 +185,42 @@ html.kiosk-mode .stage {
 /* ---------- BOTTOM: time and weather ---------- */
 
 .blk-when { gap: 18px; }
+
+/* BRANDING LANGUAGE, carried over from option-b. The old board set its big
+   numbers in the serif (.weather .temp and .mkt-num were both Cormorant
+   Garamond 500) and its small labels in the mono. Keep that split: serif for
+   figures you read across the lobby, mono for the labels around them.
+
+   Belwe is the wordmark face only. It cannot take this job even if we wanted
+   it to: the licensed subset is A-Z and space, 28 glyphs, with no digits and
+   no degree sign. */
 .clock {
-  font-size: 34px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 40px;
   font-weight: 500;
   letter-spacing: 0.02em;
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums lining-nums;
   line-height: 1;
 }
 .date {
   font-size: 13px;
   letter-spacing: 0.26em;
-  color: var(--dim);
+  color: var(--accent-soft);
 }
 
 .blk-wx { gap: 12px; }
 .wx-temp {
-  font-size: 30px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 34px;
   font-weight: 500;
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums lining-nums;
   line-height: 1;
   color: var(--cream);
 }
 .wx-cond {
   font-size: 13px;
   letter-spacing: 0.18em;
-  color: var(--dim);
+  color: var(--accent-soft);
   text-transform: uppercase;
 }
 
@@ -198,9 +240,9 @@ html.kiosk-mode .stage {
   letter-spacing: 0.14em;
   font-variant-numeric: tabular-nums;
 }
-.wx-day .d { color: var(--faint); }
+.wx-day .d  { color: var(--accent-text); }
 .wx-day .hi { color: var(--cream); }
-.wx-day .lo { color: var(--dim); }
+.wx-day .lo { color: var(--accent-faint); }
 
 /* Stale data: the weather block dims rather than showing a wrong number
    confidently. Set by app.js when the cache ages past an hour. */

@@ -181,6 +181,9 @@ var HERO = { mode: 'art', video: null };
   var FRAG = [
     'precision highp float;',
     'uniform vec2 u_res; uniform float u_t;',
+    // Fed from the --accent custom property in styles.css so the artwork and
+    // the chrome can never drift apart. One hex recolours the whole wall.
+    'uniform vec3 u_accent; uniform vec3 u_accent2; uniform vec3 u_hi;',
 
     'float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453123);}',
     'float noise(vec2 p){',
@@ -234,13 +237,62 @@ var HERO = { mode: 'art', video: null };
 
     ' float lum=(sharp+glow+spark)*env;',
 
-    ' vec3 dark  =vec3(0.026,0.027,0.033);',
-    ' vec3 bronze=vec3(0.639,0.510,0.286);',
-    ' vec3 cream =vec3(0.949,0.925,0.878);',
+    // INVERTED. The green is now the field and the caustic is the ink: where
+    // light used to gather, the surface goes dark instead. Same physics
+    // driving it, read as shadow rather than light.
+    //
+    // This changes the panel's total output enormously. Before, the bright
+    // colour covered a few percent of the wall; now it covers nearly all of
+    // it, so the field colour has to be far deeper than the filament colour
+    // ever needed to be or the lobby gets a wall of light.
+    // Derived from the field, not hardcoded. At pure black the veins read as
+    // holes punched through the panel; keeping a little of the field colour
+    // in them makes them read as depth in the same material. Deriving it
+    // also means the ink follows the palette automatically instead of
+    // stranding a green constant in a blue design.
+    ' vec3 ink=u_accent*0.16;',
 
-    ' vec3 col=dark;',
-    ' col+=bronze*clamp(lum,0.0,1.6)*1.15;',
-    ' col+=cream*pow(clamp(sharp*env,0.0,1.0),1.2)*1.00;',
+    // Two accents, not one. Real refracted light disperses: it is never a
+    // single hue across a whole surface. The field drifts between them.
+    ' float hue=smoothstep(0.10,0.85, env*0.55 + spark*2.2);',
+    ' vec3 field=mix(u_accent,u_accent2,hue);',
+
+    // Weight the THIN filaments hard and the broad bloom lightly. Inverting
+    // the original weighting directly turns the filigree into a handful of
+    // fat blobs: as light the bloom was a soft halo you barely registered,
+    // but as ink it dominates and floods whole regions. Leaning on sharp and
+    // spark keeps the veins fine and the drawing legible.
+    ' float veins=clamp(sharp*2.2 + spark*1.6 + glow*0.22, 0.0, 1.0);',
+
+    // The envelope only PARTLY drives where ink falls. At full strength it
+    // herded every dark form into one region and left the rest of a very
+    // wide panel as empty green.
+    ' float mask=smoothstep(0.06,0.46, veins*(0.55+0.55*env));',
+
+    // Field tone: the slow envelope lifts it, the broad caustic deepens it.
+    // Two opposing slow signals give the green somewhere to go even where no
+    // ink lands, instead of a flat fill.
+    ' float tone=pow(broad,1.2);',
+    ' field*=0.72+0.46*env-0.20*tone;',
+
+    ' vec3 col=mix(field, ink, mask);',
+
+    // LIGHT, not just ink. Inverting threw away the whole bright half of the
+    // range: everything became field-or-darker, which is most of why the
+    // reversed version measured about half the visual structure of the gold.
+    // Reading the fine layer at a much tighter power gives back a sparse set
+    // of genuine highlights sitting ABOVE the field, so the picture has a top
+    // end again without turning back into the old design.
+    // Kept green rather than pushed to white, and a touch broader. At 55%
+    // toward white and a power of 13 these came out as hard wiry threads
+    // that read as scratches in the surface instead of light on it.
+    ' float gleam=pow(fine,10.0)*(0.55+0.45*env);',
+    ' col+=u_hi*gleam*1.15;',
+
+    // A faint lift just outside the veins so light pools at their edges and
+    // they read as depth rather than as cutouts.
+    ' float halo=clamp(glow-sharp*1.1,0.0,1.0);',
+    ' col+=field*halo*0.26;',
 
     ' vec2 v=uv-0.5; v.x*=0.82;',
     ' col*=1.0-dot(v,v)*0.55;',
@@ -302,6 +354,34 @@ var HERO = { mode: 'art', video: null };
 
     var uRes = gl.getUniformLocation(pr, 'u_res');
     var uT = gl.getUniformLocation(pr, 'u_t');
+    var uAccent = gl.getUniformLocation(pr, 'u_accent');
+    var uAccent2 = gl.getUniformLocation(pr, 'u_accent2');
+    var uHi = gl.getUniformLocation(pr, 'u_hi');
+
+    // Read the accent straight out of the stylesheet so CSS stays the single
+    // source of truth for the palette. Falls back to the Grace House olive if
+    // the property is ever missing or malformed, so the wall is never
+    // colourless.
+    function accentRGB(prop, fallback) {
+      var hex = (getComputedStyle(document.documentElement)
+        .getPropertyValue(prop) || '').trim().replace('#', '');
+      if (hex.length === 3) hex = hex.replace(/./g, function (c) { return c + c; });
+      if (!/^[0-9a-fA-F]{6}$/.test(hex)) {
+        console.warn('[art] ' + prop + ' unreadable, falling back');
+        hex = fallback;
+      }
+      return [
+        parseInt(hex.slice(0, 2), 16) / 255,
+        parseInt(hex.slice(2, 4), 16) / 255,
+        parseInt(hex.slice(4, 6), 16) / 255
+      ];
+    }
+    var accent  = accentRGB('--accent',    '7C8B6A');
+    var accent2 = accentRGB('--accent-2',   '7C8B6A');
+    // The bright points are their own colour, not the field pushed toward
+    // white. Baby blue highlights on a blue field cannot be derived from the
+    // field, they have to be chosen.
+    var hiCol   = accentRGB('--accent-hi',  'F2F0E6');
 
     // Render scale. Full native is the only setting where the gradients are
     // truly clean, because the dither above survives only if it is not
@@ -381,6 +461,9 @@ var HERO = { mode: 'art', video: null };
 
       gl.uniform2f(uRes, bw, bh);
       gl.uniform1f(uT, now / 1000);
+      gl.uniform3f(uAccent, accent[0], accent[1], accent[2]);
+      gl.uniform3f(uAccent2, accent2[0], accent2[1], accent2[2]);
+      gl.uniform3f(uHi, hiCol[0], hiCol[1], hiCol[2]);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
 
       frames++;
