@@ -1,7 +1,12 @@
 # Option D . full width hero, minimal chrome
 
-Built and **deployed 9 Sep 2026 15:43 AEST**. This is the page on the wall.
-`option-b` is untouched on disk and is the rollback. See "DEPLOYED" at the
+**Replaced on the wall 22 Oct 2026 12:02 AEDT by `option-e` (heritage
+photos).** This page is now the rollback: `kiosk-switch.sh ambient`. While
+live it froze and was restarted by the watchdog about every 5.5 hours (five
+times a day, 15 to 22 Oct).
+
+Built and **deployed 9 Sep 2026 15:43 AEST**. Was the page on the wall until
+22 Oct. `option-b` is untouched on disk. See "DEPLOYED" at the
 bottom of this file for the rollback command, what changed on the NUC, and the
 two open issues.
 

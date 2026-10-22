@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Grace House Lobby . Option E (Heritage Photos)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- ?v= on every asset. gh-server sends a 24 hour max-age on css and js, so
+       an unversioned URL would keep serving yesterday's copy after a deploy.
+       This page itself is served no-store, so bumping v here is a deploy (e2: CC BY licence line). -->
+  <link rel="stylesheet" href="styles.css?v=e2">
+</head>
+<body>
+  <div class="preview-wrapper">
+    <!-- Bars are option-d verbatim: same blocks, same layout attribute. -->
+    <div class="stage" data-layout="a">
+
+      <header class="bar bar-top">
+        <div class="blk blk-mark"><span class="mark-name">GRACE HOUSE</span></div>
+        <div class="blk blk-addr">279 CLARENCE STREET</div>
+        <div class="blk blk-when">
+          <span class="clock" data-clock>--:--</span>
+          <span class="date" data-date></span>
+        </div>
+        <div class="blk blk-wx">
+          <span class="wx-temp" data-wx-temp>--</span>
+          <span class="wx-cond" data-wx-cond>Sydney</span>
+          <span class="wx-days" data-forecast></span>
+        </div>
+      </header>
+
+      <main class="hero" aria-label="Historic Sydney photographs">
+        <div id="layers"></div>
+        <canvas id="grain" class="grain" aria-hidden="true"></canvas>
+      </main>
+
+      <footer class="bar bar-bottom">
+        <div class="blk blk-mark"><span class="mark-name">GRACE HOUSE</span></div>
+        <div class="blk blk-addr">279 CLARENCE STREET</div>
+        <div class="blk blk-when">
+          <span class="clock" data-clock>--:--</span>
+          <span class="date" data-date></span>
+        </div>
+        <div class="blk blk-wx">
+          <span class="wx-temp" data-wx-temp>--</span>
+          <span class="wx-cond" data-wx-cond>Sydney</span>
+          <span class="wx-days" data-forecast></span>
+        </div>
+      </footer>
+
+    </div>
+  </div>
+  <script src="programme.js?v=e2"></script>
+  <script src="app.js?v=e2"></script>
+</body>
+</html>

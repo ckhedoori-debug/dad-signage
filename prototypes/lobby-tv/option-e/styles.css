@@ -1,0 +1,293 @@
+/* Grace House lobby wall . Option D (full width hero, minimal chrome)
+   Geometry contract (see memory: feedback_grace_house_x8e_top_left_capture):
+   the Colorlight X8E captures only the top left 2436x783 of the HDMI input.
+   The NUC outputs 2560x1080, so the stage is anchored top left at exactly
+   2436x783, with no centring and no scale to fit transform in kiosk mode.
+   Everything outside it stays black. */
+
+/* The Grace House wordmark face. Served from the NUC's own disk, so it is
+   never a network dependency. The binary is NOT in git; see fonts/README.md.
+   If it is ever missing the wordmark falls back to Cormorant Garamond and the
+   wall keeps working.
+
+   Declared at normal weight and used at normal weight on purpose: Belwe Light
+   ships one weight, and asking for 500 makes the browser synthesise a fake
+   bold that thickens the strokes and ruins the face. */
+@font-face {
+  font-family: 'Belwe Light';
+  src: url('fonts/Belwe-Light.ttf?v=2') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+:root {
+  --bg: #08141C;
+  --cream: #E9E3D6;
+
+  /* The house green is #7C8B6A (option-b, live since May 2026, the
+     olive/forest/cream palette in SESSION-LOG). It is only 13% saturated,
+     and rendered as light on a black field it washes out to near silver:
+     the artwork stops reading as green at all. Michael asked for colour and
+     vibrance, so this deliberately leaves the literal house olive behind
+     and keeps the hue family instead.
+
+     SINGLE SOURCE OF TRUTH. app.js reads this property and feeds it to the
+     shader as the u_accent uniform, so changing this one hex recolours the
+     artwork and the chrome together. Candidates rendered 10 Sep:
+       #35B96B -> #C6EE63  emerald to lime
+       #2CB98C -> #52D9E8  jade to aqua
+       #4FBE62 -> #F0C24A  green to gold
+       #1C4A6B -> #2E7BA8  HARBOUR, highlight #BFE4F7. CHOSEN 12 Sep */
+  --accent: #1C4A6B;
+
+  /* The brightest points. Its own colour, not the field lightened: the
+     bright specular has to be chosen independently or it just reads as a
+     washed out version of the field. */
+  --accent-hi: #BFE4F7;
+
+  /* The light shifts toward this second colour where it gathers, the way
+     refracted light disperses rather than staying one flat hue. Set it equal
+     to --accent for a single tone. */
+  --accent-2: #2E7BA8;
+
+  /* The bar labels need their OWN green, not one derived from --accent.
+     Since the inversion --accent is the dark FIELD colour, and dark green
+     type on a near black bar is unreadable. This one is chosen for contrast
+     against the bar, independently of whatever the field is doing. */
+  --accent-text:  #8FCDEB;
+  --accent-soft:  rgba(143, 205, 235, 0.92);
+  --accent-faint: rgba(143, 205, 235, 0.62);
+  --line:         rgba(143, 205, 235, 0.30);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  background: #000;
+  color: var(--cream);
+  font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  overflow: hidden;
+}
+
+.preview-wrapper {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: #000;
+}
+
+.stage {
+  width: 2436px;
+  height: 783px;
+  background: var(--bg);
+  transform: scale(var(--fit, 1));
+  transform-origin: center;
+  display: grid;
+  grid-template-rows: 68px 647px 68px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Kiosk mode: viewport >= 2436x783 (the NUC at 2560x1080 hits this).
+   Per the X8E top left capture contract: anchored top left, no transform. */
+html.kiosk-mode .preview-wrapper { display: block; }
+html.kiosk-mode .stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: top left;
+}
+
+/* ---------- BARS ---------- */
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 34px;
+  white-space: nowrap;
+}
+.bar > * { flex: 0 0 auto; }
+.bar-top { border-bottom: 1px solid var(--line); }
+.bar-bottom { border-top: 1px solid var(--line); }
+
+/* Every block exists in BOTH bars. The layout rules further down decide
+   which bar shows which, so a placement change is one attribute and never
+   a DOM move. */
+.blk { display: none; align-items: baseline; }
+
+/* ---------- WORD PLACEMENT ---------- */
+
+/* A . CORNERS. Identity and address across the top, time and weather
+   across the bottom. Four anchored corners, nothing in the middle. */
+[data-layout="a"] .bar-top    .blk-mark,
+[data-layout="a"] .bar-top    .blk-addr,
+[data-layout="a"] .bar-bottom .blk-when,
+[data-layout="a"] .bar-bottom .blk-wx { display: flex; }
+
+/* B . CROWN. The name alone and centred above the art, like a plaque.
+   Everything else drops to one line along the bottom. */
+[data-layout="b"] .bar-top    .blk-mark,
+[data-layout="b"] .bar-bottom .blk-addr,
+[data-layout="b"] .bar-bottom .blk-when,
+[data-layout="b"] .bar-bottom .blk-wx { display: flex; }
+[data-layout="b"] .bar-top { justify-content: center; }
+
+/* C . LEDGER. Name and time together on top, the way a building board
+   reads. Address and weather sit quietly underneath. */
+[data-layout="c"] .bar-top    .blk-mark,
+[data-layout="c"] .bar-top    .blk-when,
+[data-layout="c"] .bar-bottom .blk-addr,
+[data-layout="c"] .bar-bottom .blk-wx { display: flex; }
+
+/* ---------- IDENTITY ---------- */
+
+.mark-name {
+  font-family: 'Belwe Light', 'Cormorant Garamond', Georgia, serif;
+  font-weight: normal;
+  font-size: 27px;
+  letter-spacing: 0.36em;
+  color: var(--cream);
+  /* letter-spacing adds a trailing gap. Pull it back so the optical left
+     margin matches the other blocks. Not applied when the name is centred,
+     or it sits half a space off centre. */
+  margin-right: -0.36em;
+}
+[data-layout="b"] .bar-top .mark-name { margin-right: 0; }
+
+.blk-addr {
+  font-size: 12px;
+  letter-spacing: 0.30em;
+  color: var(--accent-faint);
+}
+
+/* ---------- HERO ---------- */
+
+.hero {
+  position: relative;
+  background: #000;
+  overflow: hidden;
+}
+.hero canvas,
+.hero video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.hero video { object-fit: cover; }
+.hero [hidden] { display: none !important; }
+
+/* ---------- BOTTOM: time and weather ---------- */
+
+.blk-when { gap: 18px; }
+
+/* BRANDING LANGUAGE, carried over from option-b. The old board set its big
+   numbers in the serif (.weather .temp and .mkt-num were both Cormorant
+   Garamond 500) and its small labels in the mono. Keep that split: serif for
+   figures you read across the lobby, mono for the labels around them.
+
+   Belwe is the wordmark face only. It cannot take this job even if we wanted
+   it to: the licensed subset is A-Z and space, 28 glyphs, with no digits and
+   no degree sign. */
+.clock {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 40px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums lining-nums;
+  line-height: 1;
+}
+.date {
+  font-size: 13px;
+  letter-spacing: 0.26em;
+  color: var(--accent-soft);
+}
+
+.blk-wx { gap: 12px; }
+.wx-temp {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 34px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums lining-nums;
+  line-height: 1;
+  color: var(--cream);
+}
+.wx-cond {
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  color: var(--accent-soft);
+  text-transform: uppercase;
+}
+
+.wx-days {
+  display: flex;
+  align-items: baseline;
+  gap: 26px;
+  margin-left: 22px;
+  padding-left: 34px;
+  border-left: 1px solid var(--line);
+}
+.wx-day {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  font-variant-numeric: tabular-nums;
+}
+.wx-day .d  { color: var(--accent-text); }
+.wx-day .hi { color: var(--cream); }
+.wx-day .lo { color: var(--accent-faint); }
+
+/* Stale data: the weather block dims rather than showing a wrong number
+   confidently. Set by app.js when the cache ages past an hour. */
+.blk-wx.is-stale { opacity: 0.45; }
+
+
+/* =====================================================================
+   OPTION E . HERITAGE PHOTOS (22 Oct 2026)
+   Everything above this line is option-d/styles.css byte for byte, which is
+   also what the approved ChatGPT preview used as its base (base.css).
+   Everything below is the approved preview.css, display rules only (the
+   review page controls are left out), plus the grain layer.
+   Do not redesign: the 105 PNG mock-ups are the contract.
+   ===================================================================== */
+
+:root {
+  --bg: #1e2b22;
+  --cream: #eee4d0;
+  --accent-text: #c3ccb1;
+  --accent-soft: #c1c7b0;
+  --accent-faint: #a8b49b;
+  --line: rgba(176, 149, 100, .42);
+}
+.stage { color: var(--cream); }
+.bar { background: linear-gradient(95deg, #2c2d22 0%, #1e2b22 45%, #18271f 100%); }
+.hero { background: #22281e; }
+.slide { position: absolute; inset: 0; opacity: 0; transition: opacity 1.8s ease-in-out; overflow: hidden; }
+.slide.is-current { opacity: 1; }
+.blur-field { position: absolute; inset: -75px; width: calc(100% + 150px); height: calc(100% + 150px); object-fit: cover; filter: blur(48px) saturate(.48) brightness(.59); }
+.field-tone { position: absolute; inset: 0; background: linear-gradient(110deg, #33302155, #1e2a2366), radial-gradient(ellipse at center, transparent 15%, #18241cb3 100%); }
+.photo-area { position: absolute; inset: 22px 0; display: flex; align-items: center; justify-content: center; }
+.photo { display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; box-shadow: 0 0 0 1px #e9dfc02b, 0 18px 44px #0005; }
+.slide[data-fit="cover"] .photo-area { inset: 0; }
+.slide[data-fit="cover"] .photo { width: 100%; height: 100%; max-width: none; max-height: none; object-fit: cover; box-shadow: none; }
+.photo-caption { position: absolute; right: 34px; bottom: 24px; text-align: right; color: #f3ebdb; padding: 10px 0 8px 52px; background: linear-gradient(90deg, transparent, #182219c9 36%); text-shadow: 0 1px 4px #0007; }
+.photo-year { display: block; font: 500 35px/1 'Cormorant Garamond', Georgia, serif; letter-spacing: .02em; }
+.photo-location { display: block; font: 400 15px/1.5 'IBM Plex Mono', monospace; letter-spacing: .09em; text-transform: uppercase; margin-top: 8px; }
+.photo-credit { position: absolute; left: 34px; bottom: 25px; max-width: 620px; color: #f1ead9; font: 400 12px/1.65 'IBM Plex Mono', monospace; text-shadow: 0 1px 4px #000b; padding: 8px 24px 8px 0; background: linear-gradient(90deg, #19231bbe 60%, transparent); }
+.photo-credit span { display: block; }
+.photo-caption { max-width: 850px; }
+
+/* Grain. One brightness level of film grain over the photo area, redrawn once
+   a second. Invisible on the wall, but it keeps the picture technically
+   moving, which both freeze detectors (the NUC watchdog and the Mini lookout)
+   need: they restart the browser when four looks in a row are pixel
+   identical, and a still photograph would otherwise look frozen to them.
+   Drawn by JavaScript, so a hung page still stops it and still gets caught. */
+.hero canvas.grain { z-index: 3; pointer-events: none; image-rendering: pixelated; }
