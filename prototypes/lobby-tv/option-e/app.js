@@ -316,7 +316,17 @@
   }
 
   // ---------- grain ----------
-  // One to two brightness levels, redrawn every second. See styles.css.
+  // Keeps the picture technically moving so the freeze detectors (NUC
+  // watchdog, Mini lookout) never read a still photograph as a frozen screen.
+  //
+  // v1 redrew random noise once a second with a timer. Measured on the wall
+  // (22 Oct, 12:25 to 12:28): the screen went unchanged for up to 10 seconds
+  // at a time and the watchdog logged four "frozen" strikes in 22 minutes. So
+  // v2 draws EVERY FRAME, on requestAnimationFrame, the same loop the art
+  // page used at 54 fps. Two pre-made noise tiles, one white and one black,
+  // both at 2/255 opacity, are stamped at a fresh random offset each frame.
+  // White shifts dark pixels, black shifts light pixels, so a change lands
+  // whatever the photo. Two levels in 255 is invisible on a 1.84 mm LED wall.
   function startGrain() {
     var cv = document.getElementById('grain');
     var host = document.querySelector('.hero');
@@ -327,15 +337,33 @@
     cv.width = w; cv.height = h;
     var ctx = cv.getContext('2d');
     if (!ctx) return;
-    var img = ctx.createImageData(w, h);
-    var px = img.data;
-    for (var k = 0; k < px.length; k += 4) { px[k] = px[k + 1] = px[k + 2] = 255; }
-    function draw() {
-      for (var k = 3; k < px.length; k += 4) px[k] = Math.random() < 0.5 ? 0 : 2;
-      ctx.putImageData(img, 0, 0);
+
+    var T = 256;
+    function tile(level) {
+      var c = document.createElement('canvas');
+      c.width = T; c.height = T;
+      var x = c.getContext('2d');
+      var im = x.createImageData(T, T), d = im.data;
+      for (var k = 0; k < d.length; k += 4) {
+        d[k] = d[k + 1] = d[k + 2] = level;
+        d[k + 3] = Math.random() < 0.5 ? 0 : 2;
+      }
+      x.putImageData(im, 0, 0);
+      return c;
     }
-    draw();
-    setInterval(draw, 1000);
+    var white = tile(255), black = tile(0);
+
+    window.__grain = { frames: 0 };
+    function frame() {
+      ctx.clearRect(0, 0, w, h);
+      var ox = -Math.floor(Math.random() * T), oy = -Math.floor(Math.random() * T);
+      for (var y = oy; y < h; y += T) for (var x = ox; x < w; x += T) ctx.drawImage(white, x, y);
+      ox = -Math.floor(Math.random() * T); oy = -Math.floor(Math.random() * T);
+      for (var y2 = oy; y2 < h; y2 += T) for (var x2 = ox; x2 < w; x2 += T) ctx.drawImage(black, x2, y2);
+      window.__grain.frames++;
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
   }
 
   // ---------- init ----------

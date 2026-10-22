@@ -13,6 +13,14 @@ heartbeats in 5 minutes, the watchdog's grab box different on every sample,
 zero watchdog log entries, CC BY licence line visible (P066 at 12:09:52).
 Programme: 102 photos, 30s each, mixed order, 51 minute loop.
 
+**13:10 AEDT, grain v2 (per frame) live by F5 reload, `?v=e3`.** v1 (once a second)
+left the screen unchanged for up to 10s at a time and drew four watchdog
+"frozen" strikes in the first 30 minutes (max two in a row, no restart). After
+v2: 55 of 60 grabs 0.6s apart distinct, longest identical run 3. Note the old
+art page, animating at 54fps, still logged 29 to 47 strikes a day, so the
+NUC display itself stalls now and then; the watchdog's four-strike rule is
+the right backstop for that.
+
 Open at deploy: shared memory was 1% just after the restart. The art page
 leaked about 450 MB an hour; this page's rate is not measured yet.
 
@@ -58,7 +66,7 @@ never enlarged, never cropped, colour profile kept) and `programme.js`.
 ## Cache
 
 gh-server sends a 24 hour max-age on css, js and jpg. `index.html` is
-no-store. So every asset URL carries `?v=`: bump `v=` (now e2) in `index.html` on any
+no-store. So every asset URL carries `?v=`: bump `v=` (now e3) in `index.html` on any
 css or js change. Photo URLs carry their checksum and bust themselves.
 
 ## Look at it locally
